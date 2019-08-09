@@ -35,7 +35,7 @@ func dirwalk(dir string) {
 }
 
 func getIgnore() []string {
-	iFile := fileReader("./.boxignore")
+	iFile := FileReader("./.boxignore")
 	return iFile
 }
 

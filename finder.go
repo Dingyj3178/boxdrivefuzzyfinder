@@ -9,10 +9,9 @@ import (
 
 var filenamesBytes []byte
 var err error
-
 var filenames []string
 
-func fileReader(path string) []string {
+func FileReader(path string) []string {
 	filenamesBytes, err = ioutil.ReadFile(path)
 	if err != nil {
 		panic(err)
@@ -22,7 +21,7 @@ func fileReader(path string) []string {
 }
 
 func finder(path, pattern string) []string {
-	f := fileReader(path)
+	f := FileReader(path)
 	var fileList []string
 	matches := fuzzy.Find(pattern, f)
 	for _, match := range matches {
