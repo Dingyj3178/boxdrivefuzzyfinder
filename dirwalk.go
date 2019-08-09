@@ -8,6 +8,7 @@ import (
 )
 
 func dirwalk(dir string) {
+	iFile := getIgnore()
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		panic(err)
@@ -17,14 +18,34 @@ func dirwalk(dir string) {
 	for _, file := range files {
 		if file.IsDir() {
 			println(file.Name(), "is dir, Scan dir. ")
-			dirwalk(filepath.Join(dir, file.Name()))
-			continue
+			if checkignore(file.Name(), iFile) {
+				dirwalk(filepath.Join(dir, file.Name()))
+				continue
+			} else {
+				println(file.Name(), "is ignored")
+			}
 		}
 		paths = append(paths, filepath.Join(dir, file.Name()))
-		writeBuffering(paths)
+		err = writeBuffering(paths)
+		if err != nil {
+			panic(err)
+		}
 	}
-
 	// return paths
+}
+
+func getIgnore() []string {
+	iFile := fileReader("./.boxignore")
+	return iFile
+}
+
+func checkignore(file string, iFile []string) bool {
+	for _, v := range iFile {
+		if file == v {
+			return false
+		}
+	}
+	return true
 }
 
 func writeBuffering(filenames []string) error {
@@ -40,7 +61,10 @@ func writeBuffering(filenames []string) error {
 			panic(err)
 		}
 	}
-	writer.Flush()
+	err = writer.Flush()
+	if err != nil {
+		panic(err)
+	}
 
 	return nil
 }
